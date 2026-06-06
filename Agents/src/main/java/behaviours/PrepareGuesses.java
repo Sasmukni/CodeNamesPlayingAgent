@@ -9,20 +9,7 @@ import utils.Word2VecUser;
 import utils.WordNetSearch;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-
-import it.uniroma1.lcl.babelnet.*;
-import it.uniroma1.lcl.babelnet.data.BabelSenseSource;
-import it.uniroma1.lcl.jlt.util.Language;
-import it.uniroma1.lcl.jlt.util.Pair;
-import it.uniroma1.lcl.jlt.util.UniversalPOS;
 
 public class PrepareGuesses extends OneShotBehaviour {
     //private int counter;

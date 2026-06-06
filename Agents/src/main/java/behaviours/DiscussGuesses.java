@@ -1,24 +1,19 @@
 package behaviours;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import agents.PlayerAgent;
 import entities.GameStatus;
 import entities.GuessDto;
 import entities.Opinion;
-import it.uniroma1.lcl.jlt.util.Pair;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import utils.ApiCaller;
 import utils.CodeNamesUtils;
 
 public class DiscussGuesses extends Behaviour{ //Behaviour {
-    private int counter;
     private boolean hasEnded = false;
     private int playerCount = 0;
     private boolean reqSent = false;
@@ -29,7 +24,6 @@ public class DiscussGuesses extends Behaviour{ //Behaviour {
     private List<Opinion> opinions = new ArrayList<Opinion>();
     public DiscussGuesses(){
         super();
-        counter=0;
     }
     @Override
     public void action() {

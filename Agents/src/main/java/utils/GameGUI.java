@@ -19,7 +19,6 @@ import java.util.List;
 public class GameGUI extends JFrame {
 
     private GameStatus gameState;
-    private String gameId;
     private List<Message> messages = new ArrayList<Message>(); //we need a list of messages to write the chat
     public GameGUI( GameStatus gameState) throws BadLocationException {
         this.gameState = gameState;

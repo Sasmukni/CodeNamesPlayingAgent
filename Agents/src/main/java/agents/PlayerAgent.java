@@ -15,13 +15,7 @@ import entities.Clue;
 import entities.GameStatus;
 import entities.Opinion;
 
-import java.util.HashMap;
 import java.util.List;
-
-import it.uniroma1.lcl.jlt.util.Pair;
-
-import it.uniroma1.lcl.babelnet.BabelSense;
-import it.uniroma1.lcl.babelnet.BabelSynset;
 
 public class PlayerAgent extends Agent {
 
@@ -35,7 +29,7 @@ public class PlayerAgent extends Agent {
 	private Clue currentClue;
 	private String currentGameId;
 	private GameStatus gs = null;
-	private HashMap<String, List<BabelSense>> boardSenses;
+	//private HashMap<String, List<BabelSense>> boardSenses;
 	private List<Opinion> selectedWords;
 	private boolean isGameMngr = false;
 	private boolean isTeamCoord = false;
@@ -262,14 +256,14 @@ public class PlayerAgent extends Agent {
 	public GameStatus getGameStatus() {
 		return gs;
 	}
-
+	/* 
 	public void setBoardSenses(HashMap<String, List<BabelSense>> bss) {
 		boardSenses = bss;
 	}
 
 	public HashMap<String, List<BabelSense>> getBoardSenses() {
 		return boardSenses;
-	}
+	}*/
 
 	public boolean isGameMngr() {
 		return isGameMngr;

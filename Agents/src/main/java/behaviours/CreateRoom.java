@@ -1,20 +1,6 @@
 package behaviours;
-import jade.content.AgentAction;
-import jade.content.lang.Codec.CodecException;
-import jade.content.onto.OntologyException;
-import jade.content.onto.basic.Action;
-import jade.core.AID;
-import jade.core.Agent;
 //import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPANames;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
-import jade.domain.JADEAgentManagement.QueryAgentsOnLocation;
-import jade.lang.acl.ACLMessage;
 import utils.ApiCaller;
 import utils.GameGUI;
 

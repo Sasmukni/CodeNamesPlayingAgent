@@ -1,11 +1,6 @@
 package exec;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.concurrent.CountDownLatch;
-
-import it.uniroma1.lcl.babelnet.BabelNet;
-import it.uniroma1.lcl.babelnet.BabelNetConfiguration;
-import jade.Boot;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;

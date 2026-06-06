@@ -13,9 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-
-import it.uniroma1.lcl.babelnet.*;
 
 public class PrepareClues extends OneShotBehaviour {
     private int counter;
@@ -154,7 +151,7 @@ public class PrepareClues extends OneShotBehaviour {
         counter=1;
     }
     public int onEnd(){
-    	OracleAgent oa = (OracleAgent) myAgent;
+    	//OracleAgent oa = (OracleAgent) myAgent;
         //now we will send the clue to each player so we will send the clue message also to the "chat"
     	/*if(oa.getClue()!= null) {
     		

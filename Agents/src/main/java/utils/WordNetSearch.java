@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.deeplearning4j.text.stopwords.StopWords;
 
 public abstract class WordNetSearch {
 	private static Dictionary dictionary;
@@ -45,7 +44,7 @@ public abstract class WordNetSearch {
 		IndexWord e = dictionary.lookupIndexWord(POS.NOUN, end); // the end is from the Board, so it has to be a noun
 		List<Synset> endSynsets = e.getSenses();
 		int bestDepth = Integer.MAX_VALUE;
-		Relationship best = null;
+		//Relationship best = null;
 		for (IndexWord st : s.getIndexWordArray()) {
 			List<Synset> startSynsets = st.getSenses();
 			for (PointerType pt : allTypes) {
@@ -59,7 +58,7 @@ public abstract class WordNetSearch {
 						for (Relationship r : list) {
 							if (r.getDepth() < bestDepth) {
 								bestDepth = r.getDepth();
-								best = r;
+								//best = r;
 							}
 						}
 					}
@@ -78,7 +77,7 @@ public abstract class WordNetSearch {
 		// iteration??), it could be any POS
 		IndexWord e = dictionary.lookupIndexWord(POS.NOUN, end); // the end is from the Board, so it has to be a noun
 		List<Synset> endSynsets = e.getSenses();		
-		Relationship best = null;
+		//Relationship best = null;
 		for (IndexWord st : s.getIndexWordArray()) {
 			List<Synset> startSynsets = st.getSenses();
 			for (PointerType pt : allTypes) {
@@ -115,7 +114,7 @@ public abstract class WordNetSearch {
 						for (Relationship r : list) {
 							if (r.getDepth() < bestDepth) {
 								bestDepth = r.getDepth();
-								best = r;
+								//best = r;
 							}
 						}
 						// if(((AsymmetricRelationship) best).getCommonParentIndex()<=5)
@@ -140,7 +139,7 @@ public abstract class WordNetSearch {
 		// iteration??), it could be any POS
 		IndexWordSet eall =dictionary.lookupAllIndexWords(end);  // the end is from the Board, so it should be a noun, but the Oracle doesn't know this constraint!!!
 		//IndexWord e = dictionary.lookupIndexWord(POS.NOUN, end);
-		Relationship best = null;
+		//Relationship best = null;
 		for(IndexWord e : eall.getIndexWordArray()){
 			List<Synset> endSynsets = e.getSenses();		
 			for (IndexWord st : s.getIndexWordArray()) {
@@ -179,7 +178,7 @@ public abstract class WordNetSearch {
 							for (Relationship r : list) {
 								if (r.getDepth() < bestDepth) {
 									bestDepth = r.getDepth();
-									best = r;
+									//best = r;
 								}
 							}
 							// if(((AsymmetricRelationship) best).getCommonParentIndex()<=5)

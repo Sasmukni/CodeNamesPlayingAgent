@@ -1,37 +1,23 @@
 package utils;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import it.uniroma1.lcl.jlt.util.Pair;
-import net.sf.extjwnl.JWNLException;
 import opennlp.tools.stemmer.PorterStemmer;
-import opennlp.tools.lemmatizer.Lemmatizer;
-import opennlp.tools.lemmatizer.LemmatizerME;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
-import org.bytedeco.opencv.opencv_dnn.BlankLayer;
-import org.deeplearning4j.*;
+import org.threadly.util.Pair;
 
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-
-import entities.Clue;
 import entities.PossibleClue;
-
-//import deeplearning4j.models.embeddings.wordvectors.WordVectors;
 
 public abstract class Word2VecUser {
 	
@@ -41,11 +27,14 @@ public abstract class Word2VecUser {
 	public static void initialize() {
 		if(wordVectors == null)
 			try {
-	            
-	            File freqFile = new File("C:\\Users\\s.capani\\SdaiNlp\\FrequenciesCount.txt");
+				String rootPath = System.getProperty("user.dir");
+				//String classPath = System.getProperty("java.class.path");
+				File freqFile = new File(rootPath +"/Agents/target/classes/FrequenciesCount.txt"); 
+				//ClassLoader classloader = getClass().getClassLoader();
+	            //File freqFile = new File(classloader.getClass().getResource("FrequenciesCount.txt").toURI());//"C:\\Users\\s.capani\\SdaiNlp\\FrequenciesCount.txt");
 	            if (!freqFile.exists()) {
 	                System.err.println("Frequencies file not found! Please download it first.");
-	                System.err.println("Example: https://www.ugent.be/pp/experimentele-psychologie/en/research/documents/subtlexus");
+	                System.err.println("https://www.ugent.be/pp/experimentele-psychologie/en/research/documents/subtlexus");
 	                return;
 	            }
 	            //Calculate Frequency Priors
@@ -53,11 +42,12 @@ public abstract class Word2VecUser {
 	            freqPriors = calculateFrequencyPriors(freqFile.toPath());
 	            
 	            // Path to pre-trained Word2Vec model
-	            File modelFile = new File("C:\\Users\\s.capani\\SdaiNlp\\word2vec\\GoogleNews-vectors-negative300.bin");
+	            File modelFile = new File(rootPath +"/Agents/target/classes/GoogleNews-vectors-negative300.bin"); 
+				//File modelFile = new File("C:\\Users\\s.capani\\SdaiNlp\\word2vec\\GoogleNews-vectors-negative300.bin");
 	
 	            if (!modelFile.exists()) {
 	                System.err.println("Model file not found! Please download it first.");
-	                System.err.println("Example: https://code.google.com/archive/p/word2vec/");
+	                System.err.println("Example: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing");
 	                return;
 	            }
 	            
@@ -353,10 +343,10 @@ public abstract class Word2VecUser {
     	for(String bw:boardWords) {
     		temp.add(new Pair<>(wordVectors.similarity(clue, bw.replace(" ", "_")),bw));
     	}
-    	temp.sort((p1,p2) -> Double.compare(p2.getFirst(), p1.getFirst()));
+    	temp.sort((p1,p2) -> Double.compare(p2.getLeft(), p1.getLeft()));
     	System.out.println(temp);
     	for(Pair<Double,String> p:temp.subList(0,N)) //temp.size() -1 - N, temp.size() - 1
-    		res.add(p.getSecond());
+    		res.add(p.getRight());
     	System.out.println(res);
     	return res;
     }

@@ -19,7 +19,7 @@ public final class GameStatusIO {
 		try {
 			String rootPath = System.getProperty("user.dir");
 			//String classPath = System.getProperty("java.class.path");
-			File fileDynamic = new File(rootPath +"/target/classes/data/"+gs.Id+".json"); //dynamic
+			File fileDynamic = new File(rootPath +"/WebServer/target/classes/data/"+gs.Id+".json"); //dynamic
 			if(!fileDynamic.exists())
 				fileDynamic.createNewFile();
 			
@@ -31,7 +31,7 @@ public final class GameStatusIO {
 	            e.printStackTrace();
 	            return false;
 	        }
-			File file =new File(rootPath + "/src/main/resources/data/" + gs.Id + ".json"); //persistent
+			File file =new File(rootPath + "/WebServer/src/main/resources/data/" + gs.Id + ".json"); //persistent
 			if(!file.exists())
 				file.createNewFile();
 			

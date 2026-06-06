@@ -2,15 +2,12 @@ package agents;
 import java.util.HashMap;
 
 import behaviours.CreateRoom;
-import behaviours.DiscussGuesses;
 import behaviours.GameClosed;
 import behaviours.GameManager;
 import behaviours.InitializeOracle;
 import behaviours.ManageClueRequests;
 import behaviours.PrepareClues;
-import behaviours.PrepareGuesses;
 import behaviours.Wait;
-import behaviours.WaitClue;
 import entities.Clue;
 import entities.GameStatus;
 import jade.core.*;
@@ -21,7 +18,6 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import utils.ApiCaller;
 import utils.GameGUI;
 
 

@@ -5,8 +5,6 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 //import jade.lang.acl.ACLMessage;
 //import jade.core.*;
-import agents.PlayerAgent;
-import entities.Clue;
 
 public class Wait extends Behaviour {
     private int status;

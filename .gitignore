@@ -1,0 +1,3 @@
+WebServer/src/main/resources/data/*.json
+Agents/src/main/resources/GoogleNews-vectors-negative300.bin
+Agents/target/classes/GoogleNews-vectors-negative300.bin
