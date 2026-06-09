@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.concurrent.CountDownLatch;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
+import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import net.sf.extjwnl.JWNLException;
 import jade.core.Profile;
@@ -16,7 +17,7 @@ public abstract class RunJade {
 	private static AgentContainer ac = null;
 	private static Runtime rt = Runtime.instance();
 	private static CountDownLatch simulationDone;
-    public static void main(String[] args) throws StaleProxyException, InterruptedException, FileNotFoundException, JWNLException, CloneNotSupportedException{
+    public static void main(String[] args) throws InterruptedException, FileNotFoundException, JWNLException, CloneNotSupportedException, ControllerException{
         //BabelNetConfiguration bnc = BabelNetConfiguration.getInstance();
         //bnc.setConfigurationFile(new File("C:\\Users\\s.capani\\SdaiNlp\\BabelNet\\BabelNet-API-5.3\\config\\babelnet.properties"));
         Word2VecUser.initialize();
@@ -51,7 +52,7 @@ public abstract class RunJade {
         
         
     }
-    private static void initializeAgents() throws StaleProxyException{
+    private static void initializeAgents() throws ControllerException{
     	AgentController a1 = ac.createNewAgent("Judas",agents.OracleAgent.class.getName(), new Object[]{"red","game-manager","str:conservative"});
     	AgentController a2 = ac.createNewAgent("John",agents.OracleAgent.class.getName(), new Object[]{"blue","str:aggressive"});
     	AgentController a3 = ac.createNewAgent("Paul",agents.PlayerAgent.class.getName(), new Object[]{"red","team-coord","str:depth"});
@@ -72,6 +73,8 @@ public abstract class RunJade {
     }
     private static void restartPlatform() throws StaleProxyException {
     	ac.kill();
+        rt.shutDown();
+        rt = Runtime.instance();
     	Profile p = new ProfileImpl();
         p.setParameter(Profile.CONTAINER_NAME, "codenames-sim");
         ac = rt.createMainContainer(p);

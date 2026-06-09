@@ -1,3 +1,6 @@
 WebServer/src/main/resources/data/*.json
+WebServer/target/classes/data/*.json
 Agents/src/main/resources/GoogleNews-vectors-negative300.bin
 Agents/target/classes/GoogleNews-vectors-negative300.bin
+*.class
+*.log
