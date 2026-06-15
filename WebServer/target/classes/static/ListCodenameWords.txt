@@ -115,7 +115,6 @@ Buck
 Bucket
 Buffalo
 Bug
-Bugle
 Bulb
 Bunch
 Bunk
@@ -605,7 +604,6 @@ Pool
 Pop
 Popcorn
 Port
-Post
 Postcard
 Potato
 Potter
@@ -665,7 +663,6 @@ Sahara
 Sail
 Salad
 Saloon
-Salsa
 Salt
 Sand
 Santa
@@ -889,6 +886,5 @@ Wool
 Worm
 Writer
 Yard
-Yellowstone
 Zebra
 Zombie

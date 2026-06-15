@@ -29,7 +29,7 @@ public class InitializePlayer extends OneShotBehaviour {
         
         //check if it's a game manager
         MessageTemplate mt = MessageTemplate.MatchConversationId("game-id");
-        if(ag.isGameMngr()) {
+        if(ag.isGameMgr()) {
         	status = 2;
         	return;
         }

@@ -2,7 +2,20 @@ package utils;
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -12,24 +25,21 @@ import entities.GameStatus;
 import entities.Message;
 import entities.Word;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 public class GameGUI extends JFrame {
 
     private GameStatus gameState;
-    private List<Message> messages = new ArrayList<Message>(); //we need a list of messages to write the chat
+    private List<Message> messages = new ArrayList<>(); //we need a list of messages to write the chat
     public GameGUI( GameStatus gameState) throws BadLocationException {
         this.gameState = gameState;
         
         setTitle("Codenames Board");
         setSize(800, 600);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);// if it's the current game we want to exit, but if it's a previous game no
+        //setDefaultCloseOperation(HIDE_ON_CLOSE);
         setLayout(new GridLayout(0,2));
 
         add(createBoardPanel());
-        add(createHistoryPanel());
+        add(createChatPanel());
     }
 
     private JPanel createBoardPanel() {
@@ -83,7 +93,7 @@ public class GameGUI extends JFrame {
             getContentPane().removeAll();
 
             add(createBoardPanel(), BorderLayout.CENTER);
-            add(createHistoryPanel(), BorderLayout.EAST);
+            add(createChatPanel(), BorderLayout.EAST);
 
             revalidate();
             repaint();
@@ -98,7 +108,7 @@ public class GameGUI extends JFrame {
     	refreshBoard(gameState);
     }
     
-    private JPanel createHistoryPanel() throws BadLocationException {
+    private JPanel createChatPanel() throws BadLocationException {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
@@ -136,7 +146,6 @@ public class GameGUI extends JFrame {
         return panel;
     }
 	
-    
     private Color getColor(String label) {
         switch (label.toLowerCase()) {
             case "red": return Color.RED;

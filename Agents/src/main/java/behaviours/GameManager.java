@@ -1,34 +1,29 @@
 package behaviours;
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
+
+import agents.CodeNamesAgent;
+import entities.ChangeDto;
+import entities.Message;
+import exec.RunJade;
 import jade.core.AID;
-//import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import utils.ApiCaller;
 
-import java.util.ArrayList;
-import java.util.List;
-
-//import jade.lang.acl.ACLMessage;
-//import jade.core.*;
-import agents.OracleAgent;
-import agents.PlayerAgent;
-import entities.ChangeDto;
-import entities.Message;
-import exec.*;
-
 public class GameManager extends Behaviour {
 	
 	private int redPlayers = 0;
 	private int bluePlayers = 0;
-	private List<AID> agents = new ArrayList<>();  
-	
+	private List<AID> agents = new ArrayList<>();
     public GameManager(){
         super();
     }
     @Override
     public void action() {
-        // any agent could be a game manager! It's a parameter passed in the agent creation
         MessageTemplate mt = MessageTemplate.or(
         		MessageTemplate.MatchOntology("game-id"),
         		MessageTemplate.or(
@@ -45,83 +40,83 @@ public class GameManager extends Behaviour {
       
     	ACLMessage req = myAgent.receive(mt);
     	if(req != null) {
-	    	String gameId = "";
-	        if(myAgent instanceof PlayerAgent) 
-	        	gameId = ((PlayerAgent) myAgent).getGameId();
-	        if(myAgent instanceof OracleAgent) 
-	        	gameId = ((OracleAgent) myAgent).getGameId();
-	        ACLMessage reply = req.createReply(ACLMessage.INFORM);
         	if(req.getOntology().equals("game-id")) {
-        		//We need to count the players that are registering for which team
-        		if(req.getContent().equals("red")) {
-        			redPlayers++;
-        		}else if(req.getContent().equals("blue")) {
-        			bluePlayers++;
-        		}
-        		//we add the AID of the requesting agents to our AID list (useful for broadcasting messages)
-        		agents.add(req.getSender());
-	        	reply.setContent(gameId);
+				gameIdResponse(req);
 	        }else if(req.getOntology().equals("team-change")) {
-	        	//call API
-	        	System.out.println(myAgent.getLocalName() + ": I recieved a request for a team-change!");
-	        	ApiCaller ac = new ApiCaller();
-	        	ChangeDto cd = new ChangeDto();
-	        	cd.NewTeam = req.getContent();
-	        	cd.RoomId = gameId;
-	            String res = ac.callPutApi("http://localhost:8080/api/change-current-team",cd); 
-	            reply.setContent(res);
-	            //Coincidentally with the team change we also want to update the 
-	            if(myAgent instanceof PlayerAgent) 
-	            	((PlayerAgent) myAgent).getGg().refreshBoard(ac.getGameStatus(gameId));
-	            if(myAgent instanceof OracleAgent) 
-	            	((OracleAgent) myAgent).getGg().refreshBoard(ac.getGameStatus(gameId));
-	            
+				teamChangeResponse(req); 
 	        }else if(req.getOntology().equals("player-count")) {
-	        	if(req.getContent().equals("red")) {
-	        		reply.setContent(((Integer)redPlayers).toString());
-	        	}else {
-	        		reply.setContent(((Integer)bluePlayers).toString());
-	        	}
+	        	playerCountResponse(req);
 	        }else if("game-has-ended".equals(req.getContent())) {
-	        	ACLMessage closedMsg = new ACLMessage(ACLMessage.INFORM);
-	        	closedMsg.setContent("game-closed");
-	        	for(AID a: agents)
-	        		closedMsg.addReceiver(a);
-	        	myAgent.send(closedMsg);
-	        	myAgent.doDelete();
-        		RunJade.simEnded();
-	        	
-	        	// at the end of this preparation we will terminate our activity
-	        	return; //we wont be sending any reply there
+				closeGame();
 	        }else if(req.getOntology().equals("update-chat")) {
-	        	String[] mes = req.getContent().split("#");
-	        	if(mes.length > 2) {
-		        	Message m = new Message(req.getSender().getLocalName(),mes[0], mes[1],mes[2]);
-		            if(myAgent instanceof PlayerAgent) 
-		            	((PlayerAgent) myAgent).getGg().addMessage(m);
-		            if(myAgent instanceof OracleAgent) 
-		            	((OracleAgent) myAgent).getGg().addMessage(m);
-	        	}
+	        	updateChat(req);
 	        }
-	        myAgent.send(reply);
     	}else {
     		block();
     	}
-        
     }
+
 	@Override
 	public boolean done() {
-		//we could be done at the end of the game, but for single game simulations we don't care
-		// TODO Auto-generated method stub
 		return false;
 	}
-    
-    /* 
-    @Override
-    public boolean done() {
-        if(counter>=10)
-            return true;
-        return false;
-    }
-    */
+
+	private void gameIdResponse(ACLMessage req){
+		CodeNamesAgent cna = (CodeNamesAgent) myAgent;
+		String gameId = cna.getGameId();
+		ACLMessage reply = req.createReply(ACLMessage.INFORM);	
+		//We need to count the players that are registering for which team
+		if(req.getContent().equals("red")) {
+			redPlayers++;
+		}else if(req.getContent().equals("blue")) {
+			bluePlayers++;
+		}
+		//we add the AID of the requesting agents to our AID list (useful for broadcasting messages)
+		agents.add(req.getSender());
+		reply.setContent(gameId);
+		myAgent.send(reply);
+	}
+
+	private void teamChangeResponse(ACLMessage req){
+		CodeNamesAgent cna = (CodeNamesAgent) myAgent;
+		String gameId = cna.getGameId();
+		ACLMessage reply = req.createReply(ACLMessage.INFORM);	
+		System.out.println(myAgent.getLocalName() + ": I recieved a request for a team-change!");
+		ApiCaller ac = new ApiCaller();
+		ChangeDto cd = new ChangeDto();
+		cd.NewTeam = req.getContent();
+		cd.RoomId = gameId;
+		String res = ac.callPutApi("http://localhost:8080/api/change-current-team",cd); 
+		reply.setContent(res);
+		//Coincidentally with the team change we also want to update the gui
+		cna.getGg().refreshBoard(ac.getGameStatus(gameId));
+		myAgent.send(reply);
+	}
+	private void playerCountResponse(ACLMessage req){
+		ACLMessage reply = req.createReply(ACLMessage.INFORM);	
+		if(req.getContent().equals("red")) {
+			reply.setContent(((Integer)redPlayers).toString());
+		}else {
+			reply.setContent(((Integer)bluePlayers).toString());
+		}
+		myAgent.send(reply);
+	}
+	private void closeGame(){
+		((CodeNamesAgent) myAgent).getGg().setDefaultCloseOperation(HIDE_ON_CLOSE); // if we close an old window we don't want to close the program
+		ACLMessage closedMsg = new ACLMessage(ACLMessage.INFORM);
+		closedMsg.setContent("game-closed");
+		for(AID a: agents)
+			closedMsg.addReceiver(a);
+		myAgent.send(closedMsg);
+		myAgent.doDelete();
+		RunJade.simEnded();
+	}
+	private void updateChat(ACLMessage req){
+		CodeNamesAgent cna = (CodeNamesAgent) myAgent;
+		String[] mes = req.getContent().split("#");
+		if(mes.length > 2) {
+			Message m = new Message(req.getSender().getLocalName(),mes[0], mes[1],mes[2]);
+			cna.getGg().addMessage(m);
+		}
+	}
 }

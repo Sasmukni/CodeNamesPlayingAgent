@@ -81,13 +81,13 @@ public class Examples {
     	//dictionary. Collegiate
     	exists("Collegiate");WordNetSearch.initialize();
     	//WordNetSearch wns = new WordNetSearch();
-    	System.out.println("Best Relationship between Author and Novel");
+    	System.out.println("Best Relationship between Santa and Christmas");
     	//WordNetSearch.getBestRelationshipDepth("Author", "Novel");
     	//System.out.println("Best Relationship between Wizard and Magic");
     	//WordNetSearch.getBestRelationshipDepth("Wizard", "Magic");
     	//System.out.println("Best Relationship between Car and Engine");
-    	//WordNetSearch.getBestRelationshipDepth("Car", "Engine");
-        searchTroughAllRelationships(dictionary.lookupIndexWord(POS.NOUN, "Author"), dictionary.lookupIndexWord(POS.NOUN, "Novel"));
+    	WordNetSearch.getBestFlexibleRelationshipDepth("Santa", "Christmas");
+        //searchTroughAllRelationships(dictionary.lookupIndexWord(POS.NOUN, "Santa"), dictionary.lookupIndexWord(POS.NOUN, "Christmas"));
     }
 
     private void demonstrateMorphologicalAnalysis(String phrase) throws JWNLException {

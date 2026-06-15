@@ -18,6 +18,7 @@ public class Clue {
 	public int N;
 	public String Word;
 	
+	@Override
 	public String toString() {
 		return N + " " + Word;
 	}

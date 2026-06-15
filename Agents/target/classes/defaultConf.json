@@ -1,0 +1,12 @@
+{
+    "agents":[
+        {"name":"Judas","role":"Oracle","attributes":["red","game-manager","str:user"]},
+        {"name":"Jhon","role":"Oracle","attributes":["blue","str:aggressive"]},
+        {"name":"Paul","role":"Player","attributes":["red","team-coord","str:word2vec"]},
+        {"name":"Peter","role":"Player","attributes":["red","str:word2vec"]},
+        {"name":"Mary","role":"Player","attributes":["blue","str:depth"]},
+        {"name":"Suzie","role":"Player","attributes":["blue","team-coord","str:score"]},
+        {"name":"Mark","role":"Player","attributes":["red","str:depth-allpos"]},
+        {"name":"Jack","role":"Player","attributes":["blue","str:depth-allpos"]}
+    ]
+}

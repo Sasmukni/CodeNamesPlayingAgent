@@ -9,13 +9,13 @@ import agents.PlayerAgent;
 import entities.Clue;
 
 public class WaitClue extends Behaviour {
-    private int status;
+    private int output;
     private boolean messageSent = false;
-    private boolean clueRecieved = false;
+    private boolean clueReceived = false;
     private int clueCount = 1;
     public WaitClue(){
         super();
-        status=0;
+        output=0;
     }
     @Override
     public void action() {
@@ -39,44 +39,24 @@ public class WaitClue extends Behaviour {
     	if(req != null) {
     		if("get-clue".equals(req.getConversationId())){
     			agent.setClue(new Clue(req.getContent()));
-        		status = 1;
+        		output = 1;
     		}else {
-    			status = 2; // go to GameClosed Behaviour
+    			output = 2; // go to GameClosed Behaviour
     		}
-    		clueRecieved = true;//to trigger doneCondition
+    		clueReceived = true;//to trigger doneCondition
     	}else {
     		block();
     	}
-        // recieve message, if message if of type "roomcode" save it but don't change status
-        // for now we use a pre existing room for testing
-        //agent.setGameId("bc6e0458ca2b4bea817afd9aede5d834");
-        // recieve message, when message is Received, do stuff
-        //agent.setClue(new Clue(2,"plant"));
-        //counter ++;
-
-        //ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-        //msg.addReceiver(new AID("Peter",AID.ISLOCALNAME));
-        //msg.setContent("Fuck you");
-        //myAgent.send(msg);
     }
     public int onEnd(){
-    	clueRecieved = false;
+    	clueReceived = false;
     	messageSent = false;
-    	int temp = status;
-        status=0;
+    	int temp = output;
+        output=0;
         return temp;
     }
-    /* 
-    @Override
-    public boolean done() {
-        if(counter>=10)
-            return true;
-        return false;
-    }
-    */
 	@Override
 	public boolean done() {
-		// TODO Auto-generated method stub
-		return clueRecieved;
+		return clueReceived;
 	}
 }

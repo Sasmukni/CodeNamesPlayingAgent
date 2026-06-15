@@ -3,19 +3,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import opennlp.tools.stemmer.PorterStemmer;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.threadly.util.Pair;
-
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
-import org.nd4j.linalg.api.ndarray.INDArray;
+import org.threadly.util.Pair;
 
 import entities.PossibleClue;
 
@@ -61,7 +56,7 @@ public abstract class Word2VecUser {
 	        }
 	}
 	
-	public static HashMap<String, Double> calculateFrequencyPriors(Path path) throws IOException {
+	private static HashMap<String, Double> calculateFrequencyPriors(Path path) throws IOException {
 		HashMap<String, Double> freq = new HashMap<>();
 
 	    List<String> lines = Files.readAllLines(path);
@@ -104,92 +99,31 @@ public abstract class Word2VecUser {
 	    
 	    return freqPrior;
 	}
-	
-    public static void example() {
-        try {
-            // Example: Find words similar to "king"
-            String word = "plant";
-            Collection<String> coll = new ArrayList<String>();
-            coll.add(word);
-            coll.add("daisy");
-            INDArray res = wordVectors.getWordVectorsMean(coll);
-            Collection<String> words = wordVectors.wordsNearest(res, 5);
-            for(String w : words) {
-                System.out.println("Word found 'between' plant and worker " + w);
-            }
-            if (wordVectors.hasWord(word)) {
-                Collection<String> similarWords = wordVectors.wordsNearest(word, 10);
-                System.out.println("Words similar to '" + word + "': " + similarWords);
-            } else {
-                System.out.println("Word not found in vocabulary: " + word);
-            }
 
-            // Example: Compute similarity between two words
-            String w1 = "king";
-            String w2 = "queen";
-            
-            // Per ogni gruppo di parole della squadra di dimensione N o inferiore cercare la parola (o le parole) che siano le meno simili possibili alla parola nera e alle parole della squadra avversaria
-            wordVectors.wordsNearest(coll, words, 10); //questa funzione fa già quello che mi serviva!!!!! Pazzesco
-            if (wordVectors.hasWord(w1) && wordVectors.hasWord(w2)) {
-                double similarity = wordVectors.similarity(w1, w2);
-                System.out.println("Similarity between '" + w1 + "' and '" + w2 + "': " + similarity);
-            }
-         	
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    
     public static HashMap<Integer,List<PossibleClue>> prepareClue(Collection<String> posWords, Collection<String> negWords, Collection<String> blankWords, String killer) {
-    	// for now we are searching for a word that is near the pos and far from the neg, we need to refine that.
-    	// maximizing the distance from the killer word (the killer is also included in the negWords)
-    	
-    	// for each subset of posWords we want to find the top [nearest] (3?10?) words, 
-    	// verify the similarity with each word in the subset and the (non)similarity with each negWord, 
-    	// maximize the first and minimize the second
-    	//List<Pair<Clue,Double>> possibleClues = new ArrayList<Pair<Clue,Double>>();
-    	//for(int i=1; i< posWords.size();i++) {
-    		// for each possible N iterate (on the subsets) and save the best clue word
-		HashMap<Integer,List<PossibleClue>> possibleClues = new HashMap<Integer,List<PossibleClue>>();
-    	//double bestSim = 0;
-		//String bestWord = "";
-		//ArrayList<String> a = new ArrayList();
-		//a.add("palm");
-		//a.add("pool");
-		//Collection<String> ab =  wordVectors.wordsNearest(a, new ArrayList(), 100);
-		//System.out.println(ab);
-		//int N = 1;
-		//int i = 0;
-		//int max = (int) Math.pow(2, posWords.size());
-		for(Collection<String> pw: iterativePowerSet(posWords)) {
-			//System.out.println("Clue preparation: " + i++ + "/" + max );
-			//if(averagePairwiseSimilarity(pw) < 0.15) 
-			//	continue;
-			//System.out.println("Intresting set candidate found in: " + pw.toString());
+    	HashMap<Integer,List<PossibleClue>> possibleClues = new HashMap<>();
+    	for(Collection<String> pw: CodeNamesUtils.iterativePowerSet(posWords)) {
 			int size = pw.size(); 
 			if(size < 1 || size > 4)
 				continue;
-    		Collection<String> res = wordVectors.wordsNearest(repeatList(pw,5), negWords, 350);
-			//Collection<String> res = wordVectors.wordsNearest(pw, negWords , 10);
-    		//System.out.println("Words found for: " + pw.toString() + ":\n " + res.toString());
-    		for(String s: res) {
+    		Collection<String> res = wordVectors.wordsNearest(CodeNamesUtils.repeatList(pw,5), negWords, 350);
+			for(String s: res) {
     			if(s.contains("_")) continue;
     			boolean isOk = true;
     			for(String p: posWords)
-    				if(tooMuchInCommon(s,p)) { 
+    				if(CodeNamesUtils.tooMuchInCommon(s,p)) { 
     					isOk=false;
     					break;
     				}
     			if(!isOk) continue;
     			for(String n: negWords)
-    				if(tooMuchInCommon(s,n))  { 
+    				if(CodeNamesUtils.tooMuchInCommon(s,n))  { 
     					isOk=false;
     					break;
     				}
     			if(!isOk) continue;
     			for(String b: blankWords)
-    				if(tooMuchInCommon(s,b))  { 
+    				if(CodeNamesUtils.tooMuchInCommon(s,b))  { 
     					isOk=false;
     					break;
     				}
@@ -204,7 +138,7 @@ public abstract class Word2VecUser {
     			if(killerSim * killerSim < 0.01) { 
     				//we need to set a threshold for the killer word
     				Double score; //the score needs to take in account the sim with the targets - the sim with the rest of the board!! 
-    				Double sim = 0d;
+    				Double sim;
     				Double meanSim = 0d;
     				Double minSim = Double.MAX_VALUE;
     				for(String w: pw) {
@@ -254,91 +188,22 @@ public abstract class Word2VecUser {
     					possibleClues.put(size, bestClues);
     				}
     			}
-    			//else{System.err.println("Threshold not passed!");}
-    		}
+    			}
 		}
-		/*
-		for(int j = 1; j<= posWords.size();j++) {
-			List<PossibleClue> res = possibleClues.get(j);
-			if(res!= null) {
-				System.out.println("Best Clues for N =" + j + ": ");
-				for(PossibleClue pc: res)
-					System.out.println(pc);
-			}
-		}*/
-		
-		return possibleClues;//n<ew Clue(N,bestWord);
-    }
-    
-    private static List<Collection<String>> iterativePowerSet(Collection <String> words) {
-    	List<Collection<String>> powerSet = new ArrayList<>();
-        List<String> list = new ArrayList<String>(words);
-        int num = list.size();
-        for (int i = 0; i < (1 << num); i++) {
-        	Collection<String> subset = new ArrayList<>();
-            for (int j = 0; j < num; j++) {
-                int grayEquivalent = i ^ (i >> 1);
-                if(((1 << j) & grayEquivalent) > 0)
-                	subset.add(list.get(j));
-            }
-        	powerSet.add(subset);
-        }
-        return powerSet;
-    }
-    
-    private static Collection<String> repeatList(Collection<String> words, int N){
-    	List<String> input = new ArrayList<String>(words);
-    	Collection<String> out = new ArrayList<String>();
-    	for(int i=0; i<N; i++) {
-    		out.addAll(input);
-    	}
-    	return out;
+		return possibleClues;
     }
     
     private static Double getFreqPrior(String word) {
     	//Double prior = freqPriors.getOrDefault(word, 0.02); // if the word does not exist in our frequency lists assign a low prior
     	Double prior = freqPriors.get(word.toLowerCase());
     	if(prior == null) {
-    		//System.err.println("The word: '" + word + "' does not appear in the frequency file.");
     		prior=0.02;// if the word does not exist in our frequency lists assign a low prior
     	}
     	return prior;
     }
-    
-    private static String normalize(String s) {
-        return s
-            .toLowerCase()
-            .replaceAll("[^a-z]", "");
-    }
-    
-    public static String stem(String s) {
-    	PorterStemmer stemmer = new PorterStemmer();
-        return stemmer.stem(s);
-    }
-    
-    
-    private static boolean tooMuchInCommon(String clue, String boardWord) {
-    	//here we should check if the selected clue word has too much stuff in common with the words present in the board AKA if there is an equivalence between lemmas or stems
-    	clue = normalize(clue);
-        boardWord = normalize(boardWord);
 
-        // exact match
-        if(clue.equals(boardWord))
-            return true;
-
-        // substring overlap
-        if(clue.length() >= 3 && boardWord.length() >= 3) {
-            if(clue.contains(boardWord) || boardWord.contains(clue))
-                return true;
-        }
-        
-        //stem equivalence
-        if(stem(clue).equals(stem(boardWord)))
-        	return true;
-    	return false; 
-    }
     public static List<String> getOrderedNClosestWords(String clue, List<String> boardWords, int N){
-    	List<String> res = new ArrayList<String>();
+    	List<String> res = new ArrayList<>();
     	List<Pair<Double,String>> temp = new ArrayList<>();
     	for(String bw:boardWords) {
     		temp.add(new Pair<>(wordVectors.similarity(clue, bw.replace(" ", "_")),bw));

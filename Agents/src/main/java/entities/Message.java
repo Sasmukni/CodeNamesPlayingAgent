@@ -36,6 +36,7 @@ public class Message {
 	private String SenderTeam;
 	private String Content;
 	
+	@Override
 	public String toString() {
 		return Sender +"(" + SenderTeam + "-" + SenderRole + "): " + Content;
 	}

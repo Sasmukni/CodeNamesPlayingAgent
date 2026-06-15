@@ -40,7 +40,6 @@ public class Controller {
     @PutMapping("/change-current-team")
     public String changeCurrentTeam(@RequestBody ChangeDto cg){
     	GameStatus gs = GameStatusIO.getGameStatus(cg.RoomId);
-    	String res = "Not found";
     	gs.currentTeam = cg.NewTeam;
     	//Update file
     	GameStatusIO.saveGameStatus(gs);

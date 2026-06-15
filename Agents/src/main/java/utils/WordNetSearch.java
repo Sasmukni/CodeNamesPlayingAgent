@@ -1,5 +1,11 @@
 package utils;
 
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.data.IndexWordSet;
@@ -12,17 +18,10 @@ import net.sf.extjwnl.data.relationship.RelationshipFinder;
 import net.sf.extjwnl.data.relationship.RelationshipList;
 import net.sf.extjwnl.dictionary.Dictionary;
 
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 
 public abstract class WordNetSearch {
 	private static Dictionary dictionary;
-	private static List<PointerType> allTypes = Collections.unmodifiableList(Arrays.asList(PointerType.ANTONYM,
+	private static final List<PointerType> allTypes = Collections.unmodifiableList(Arrays.asList(PointerType.ANTONYM,
 			PointerType.HYPERNYM, PointerType.HYPONYM, PointerType.ENTAILMENT, PointerType.SIMILAR_TO,
 			PointerType.MEMBER_HOLONYM, PointerType.SUBSTANCE_HOLONYM, PointerType.PART_HOLONYM,
 			PointerType.MEMBER_MERONYM, PointerType.SUBSTANCE_MERONYM, PointerType.PART_MERONYM, PointerType.CAUSE,
@@ -51,7 +50,7 @@ public abstract class WordNetSearch {
 				for (Synset es : endSynsets) {
 					for (Synset ss : startSynsets) {
 						RelationshipList list = RelationshipFinder.findRelationships(ss, es, pt);
-						if (list.size() == 0) {
+						if (list.isEmpty()) {
 							continue;
 						}
 						// get the relationship with the best(lower) depth, from the list
@@ -84,30 +83,22 @@ public abstract class WordNetSearch {
 				for (Synset es : endSynsets) {
 					//for each Synset of end check if the start word (stemmed) is in the gloss // not enough! Also kinda stupid?
 					String endGloss = es.getGloss();
-					List<String> stemmedGloss = new ArrayList<>();
-					for(String stemmedWord : endGloss.split("\\s")){
-						stemmedGloss.add(stemmedWord);
-					}
-					String stemmedStart = Word2VecUser.stem(start);
-					if(stemmedGloss.contains(stemmedStart)) {
+					List<String> listedGloss = Arrays.asList(endGloss.split("\\s"));
+					if(listedGloss.contains(start)) {
 						System.out.println("YEAH, it happened, with the words " + start + " and " + end + " the gloss of the second word was: " + endGloss);
 						bestDepth = 1;
 						break;
 					}
 					for (Synset ss : startSynsets) {
 						String startGloss = ss.getGloss();
-						stemmedGloss = new ArrayList<>();
-						for(String stemmedWord : startGloss.split("\\s")){
-							stemmedGloss.add(stemmedWord);
-						}
-						String stemmedEnd = Word2VecUser.stem(end); 
-						if(stemmedGloss.contains(" "+stemmedEnd)) {
+						listedGloss = Arrays.asList(startGloss.split("\\s"));
+						if(listedGloss.contains(end)) {
 							System.out.println("YEAH, it happened, with the words " + end + " and " + start + " the gloss of the second word was: " + startGloss);
 							bestDepth = 1;
 							break;
 						}
 						RelationshipList list = RelationshipFinder.findRelationships(ss, es, pt);
-						if (list.size() == 0) {
+						if (list.isEmpty()) {
 							continue;
 						}
 						// get the relationship with the best(lower) depth, from the list
@@ -123,10 +114,6 @@ public abstract class WordNetSearch {
 				}
 			}
 		}
-		/*
-		if(best != null && bestDepth < 6)
-			best.getNodeList().print(); // for each couple of words we print the best relationship
-			*/
 		return bestDepth;
 	}
 
@@ -148,30 +135,22 @@ public abstract class WordNetSearch {
 					for (Synset es : endSynsets) {
 						//for each Synset of end check if the start word (stemmed) is in the gloss // not enough! Also kinda stupid?
 						String endGloss = es.getGloss();
-						List<String> stemmedGloss = new ArrayList<>();
-						for(String stemmedWord : endGloss.split("\\s")){
-							stemmedGloss.add(stemmedWord);
-						}
-						String stemmedStart = Word2VecUser.stem(start);
-						if(stemmedGloss.contains(stemmedStart)) {
+						List<String> stemmedGloss = Arrays.asList(endGloss.toLowerCase().split("\\s"));
+						if(stemmedGloss.contains(start.toLowerCase())) {
 							System.out.println("YEAH, it happened, with the words " + start + " and " + end + " the gloss of the second word was: " + endGloss);
 							bestDepth = 1;
 							break;
 						}
 						for (Synset ss : startSynsets) {
 							String startGloss = ss.getGloss();
-							stemmedGloss = new ArrayList<>();
-							for(String stemmedWord : startGloss.split("\\s")){
-								stemmedGloss.add(stemmedWord);
-							}
-							String stemmedEnd = Word2VecUser.stem(end); 
-							if(stemmedGloss.contains(" "+stemmedEnd)) {
+							stemmedGloss =  Arrays.asList(startGloss.toLowerCase().split("\\s"));
+							if(stemmedGloss.contains(end.toLowerCase())) {
 								System.out.println("YEAH, it happened, with the words " + end + " and " + start + " the gloss of the second word was: " + startGloss);
 								bestDepth = 1;
 								break;
 							}
 							RelationshipList list = RelationshipFinder.findRelationships(ss, es, pt);
-							if (list.size() == 0) {
+							if (list.isEmpty()) {
 								continue;
 							}
 							// get the relationship with the best(lower) depth, from the list
@@ -242,8 +221,8 @@ public abstract class WordNetSearch {
 	                        Relationship r = (Relationship) obj;
 	                        int depth = r.getDepth();
 	                        // hard cutoff against semantic drift
-	                        if (depth > MAX_DEPTH)
-	                            continue;
+	                        /*if (depth > MAX_DEPTH)
+	                            continue;*/
 	                        // relation importance
 	                        double relationWeight =
 	                                relationWeights.getOrDefault(pt, 0.2);
@@ -295,14 +274,14 @@ public abstract class WordNetSearch {
 	private static boolean containsToken(String gloss, String word) {
 
 	    String stemmed =
-	            Word2VecUser.stem(word.toLowerCase());
+	            CodeNamesUtils.stem(word.toLowerCase());
 
 	    String[] tokens =
 	            gloss.split("\\W+");
 
 	    for (String token : tokens) {
 
-	        if (Word2VecUser.stem(token).equals(stemmed))
+	        if (CodeNamesUtils.stem(token).equals(stemmed) || token.toLowerCase().equals(word.toLowerCase()))
 	            return true;
 	    }
 

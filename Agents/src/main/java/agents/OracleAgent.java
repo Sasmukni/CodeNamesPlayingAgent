@@ -9,43 +9,40 @@ import behaviours.ManageClueRequests;
 import behaviours.PrepareClues;
 import behaviours.Wait;
 import entities.Clue;
-import entities.GameStatus;
-import jade.core.*;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.FSMBehaviour;
 import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import utils.GameGUI;
+import jade.domain.FIPAException;
 
 
-public class OracleAgent extends Agent{
+public class OracleAgent extends CodeNamesAgent{
 	private static final String INITIALIZE = "INITIALIZE";
 	private static final String INITIALIZE1 = "INITIALIZE1";
 	private static final String GENERATE = "GENERATE";
 	private static final String WAIT = "WAIT";
 	private static final String END = "END";
 	
-    private String currentGameId;
+    //private String currentGameId;
     private Clue selectedClue; //the last clue
     private HashMap<Integer,Clue> gameClues = new HashMap<>(); //the history of clues during the current game
-    private GameStatus gs = null;
-    private boolean isGameMngr = false;
-    private String team;
-    private AID gameMaster;
+    //private GameStatus gs = null;
+    //private boolean isGameMngr = false;
+    //private String team;
+    //private AID gameManager;
     private Behaviour mngClueReq;
-    private String strategy;
-    private GameGUI gg;
+    //private String strategy;
+    //private GameGUI gg;
 
+	@Override
 	protected void setup() {
 		Object[] args = getArguments();
 		//An oracle Agent could also be a GameManager (as a bonus role defined in the parameters)
 		if(args != null){
 			for(Object arg : args){
 				if(arg.equals("game-manager")) {
-					isGameMngr = true;
+					setGameMgr(true);
 					addBehaviour(new CreateRoom(null));//"cf540d34000749b38c4346bb5f9be229"
 				}else if(arg.equals("red") || arg.equals("blue"))
 					setTeam(arg.toString());
@@ -54,58 +51,17 @@ public class OracleAgent extends Agent{
 				}
 			}
 		}
-		System.out.println("Hello! I am a Oracle Agent, my name is "+getAID().getName() + " Properties: team:" +team + " strategy:" + strategy);
+		System.out.println("Hello! I am a Oracle Agent, my name is "+getAID().getName() + " Properties: team:" +getTeam() + " strategy:" + getStrategy());
 		
-		System.out.println(getName() + " Subscribing to DF as a Oracle Service");
-		DFAgentDescription dfd = new DFAgentDescription(); 
-        dfd.setName(getAID()); 
-        ServiceDescription sd = new ServiceDescription(); 
-        sd.setType("oracle"); // type of service 
-        sd.setName(getTeam()); // name of specific service
-        dfd.addServices(sd);
-        if(isGameMngr) {
-        	ServiceDescription sg = new ServiceDescription(); 
-        	sg.setType("game-manager"); // type of service 
-            sg.setName("codenames"); // name of service
-            dfd.addServices(sg);
-        }
-        try { 
-        	DFService.register(this, dfd); 
-        }
-        catch (FIPAException fe) { 
-        	fe.printStackTrace(); 
-        }
-		if(isGameMngr) {
+		subscribeToDF();
+		if(isGameMgr()) {
 			addBehaviour(new GameManager());
 			setGameMaster(getAID());
-		}
-		
-		if(!isGameMngr) {
+		}else{
+		//if(!isGameMngr) {
 			//retrieve the game manager AID
-			dfd = new DFAgentDescription(); 
-			sd = new ServiceDescription(); 
-	        sd.setType("game-manager"); // type of service 
-	        sd.setName("codenames"); // name of service
-	        dfd.addServices(sd); 
-	        AID[] gms = new AID[0]; //initialize as an empty array
-	        try { 
-	        	DFAgentDescription[] result = DFService.searchUntilFound(this,getDefaultDF(), dfd,new SearchConstraints(),6000);
-	        	//BLOCKING CALL!!
-	        	gms = new AID[result.length];
-	        	for(int i=0; i<result.length; i++) {
-	        		gms[i] = result[i].getName();
-	        	}
-	        }
-	        catch (FIPAException fe) { 
-	        	fe.printStackTrace(); 
-	        }
-	        
-	        if(gms.length >0) {
-	        	System.out.println(getAID().getName()+": Game Manager Found");
-	        	setGameMaster(gms[0]);
-	        }
+			retrieveGameManager();
 		}
-		
 		//The clue Manager is a special behavior, we could need to restart it from other behaviors.
 		mngClueReq = new ManageClueRequests();
 		addBehaviour(mngClueReq); //each oracle has to manage clue requests
@@ -132,17 +88,7 @@ public class OracleAgent extends Agent{
         
         addBehaviour(fsm);
 	}
-	protected void takeDown(){
-		// Unregister from the yellow pages 
-		try { 
-		DFService.deregister(this); 
-		} 
-		catch (FIPAException fe) { 
-		fe.printStackTrace(); 
-		}
-		System.out.println("Me " + getAID().getName() + " is dead");
-	}
-	
+	/* 
 	public void setGameId(String gameId){
         currentGameId = gameId;
     }
@@ -171,7 +117,7 @@ public class OracleAgent extends Agent{
 	}
 	public void setTeam(String team) {
 		this.team = team;
-	}
+	}*/
 	public Clue getClue() {
 		return selectedClue;
 	}
@@ -187,6 +133,7 @@ public class OracleAgent extends Agent{
 	public Behaviour getMngClueReq() {
 		return mngClueReq;
 	}
+	/* 
 	public String getStrategy() {
 		return strategy;
 	}
@@ -200,10 +147,32 @@ public class OracleAgent extends Agent{
 		this.gg = gg;
 	}
 	public AID getGameMaster() {
-		return gameMaster;
+		return gameManager;
 	}
-	public void setGameMaster(AID gameMaster) {
-		this.gameMaster = gameMaster;
+	public void setGameMaster(AID gameManager) {
+		this.gameManager = gameManager;
+	}*/
+
+	@Override
+	protected void subscribeToDF(){
+		System.out.println(getName() + " Subscribing to DF as a Oracle Service");
+		DFAgentDescription dfd = new DFAgentDescription(); 
+        dfd.setName(getAID()); 
+        ServiceDescription sd = new ServiceDescription(); 
+        sd.setType("oracle"); // type of service 
+        sd.setName(getTeam()); // name of specific service
+        dfd.addServices(sd);
+        if(isGameMgr()) {
+        	ServiceDescription sg = new ServiceDescription(); 
+        	sg.setType("game-manager"); // type of service 
+            sg.setName("codenames"); // name of service
+            dfd.addServices(sg);
+        }
+        try { 
+        	DFService.register(this, dfd); 
+        }
+        catch (FIPAException fe) { 
+        	fe.printStackTrace(); 
+        }
 	}
-	
 }

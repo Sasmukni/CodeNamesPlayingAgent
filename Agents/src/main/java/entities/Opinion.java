@@ -1,11 +1,15 @@
 package entities;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import jade.core.AID;
 
 public class Opinion {
 	private Double score;
 	private String name;
-	private AID holder;
+	private List<AID> holders = new ArrayList<AID>();
 	public Opinion() {
 		
 	}
@@ -43,12 +47,26 @@ public class Opinion {
 	public void setScore(Double score) {
 		this.score = score;
 	}
-	public AID getHolder() {
-		return holder;
+	public List<AID> getHolders() {
+		return holders;
 	}
-	public void setHolder(AID holder) {
-		this.holder = holder;
+	public void setHolders(List<AID> holders) {
+		this.holders = holders;
 	}
 	
+	public void addHolder(AID holder){
+		this.holders.add(holder);
+	}
+
+	public Double getTrustScore(Map<AID,Double> trustMap){
+		//If an opinion is held by more than one player we take the best Trust score (the minimum between those)
+		Double min= Double.MAX_VALUE;
+		for(AID aid : holders){
+			if(min > trustMap.get(aid)){
+				min = trustMap.get(aid);
+			}
+		}
+		return score + min;
+	}
 	
 }

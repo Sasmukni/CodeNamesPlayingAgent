@@ -36,8 +36,14 @@
 		<!-- Princeton WordNet serialized 3.1 data dependency -->
 		<dependency>
 		    <groupId>net.sf.extjwnl</groupId>
-		    <artifactId>extjwnl-data-wn31-map</artifactId>
-		    <version>1.0</version>
+		    <artifactId>extjwnl-data-wn31</artifactId>
+		    <version>1.2</version>
+		</dependency>
+		<!--If compiling this code in Eclipse please remove the jade dependency-->
+		<dependency> 
+			<groupId>com.tilab.jade</groupId>
+			<artifactId>jade</artifactId>
+			<version>4.5.0</version>
 		</dependency>
   </dependencies>
 </project>

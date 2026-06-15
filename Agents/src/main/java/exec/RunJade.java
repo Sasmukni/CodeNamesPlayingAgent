@@ -1,47 +1,55 @@
 package exec;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import org.nd4j.common.io.ResourceUtils;
+
+import com.google.gson.Gson;
+
+import java.io.FileReader;
+import java.io.BufferedReader;
+import entities.CodeNamesConf;
+import entities.AgentConf;
+import jade.core.Profile;
+import jade.core.ProfileImpl;
+import jade.core.Runtime;
+import java.io.File;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import net.sf.extjwnl.JWNLException;
-import jade.core.Profile;
-import jade.core.ProfileImpl;
-import jade.core.Runtime;
 import utils.Word2VecUser;
 import utils.WordNetSearch;
 
 public abstract class RunJade {
-	public static String gameStatus = "offline";
 	private static AgentContainer ac = null;
 	private static Runtime rt = Runtime.instance();
 	private static CountDownLatch simulationDone;
+	private static CodeNamesConf config;
+
     public static void main(String[] args) throws InterruptedException, FileNotFoundException, JWNLException, CloneNotSupportedException, ControllerException{
-        //BabelNetConfiguration bnc = BabelNetConfiguration.getInstance();
-        //bnc.setConfigurationFile(new File("C:\\Users\\s.capani\\SdaiNlp\\BabelNet\\BabelNet-API-5.3\\config\\babelnet.properties"));
+		String confPath = "";
+		if (args != null) {
+			boolean takeNext=false;
+			for (Object arg : args) {
+				if(takeNext){
+					confPath=arg.toString();
+				}
+				else if(arg.toString().equals("--conf"))
+					takeNext=true;	
+			}
+		}
+		manageConfiguration(confPath);
         Word2VecUser.initialize();
         WordNetSearch.initialize();
         
         Profile p = new ProfileImpl();
         p.setParameter(Profile.CONTAINER_NAME, "codenames-sim");
         ac = rt.createMainContainer(p);
-        /*
-        String agents = "";
-        agents += "Judas:agents.OracleAgent(red,game-manager,str:conservative);";
-        agents += "John:agents.OracleAgent(blue,str:aggressive);";
-        agents += "Paul:agents.PlayerAgent(red,team-coord);";
-        agents += "Peter:agents.PlayerAgent(red);";
-        agents += "Mary:agents.PlayerAgent(blue);";
-        agents += "Suzie:agents.PlayerAgent(blue,team-coord)";
-        
-        String[] jadeArgs = new String[] {
-            "-gui",
-            "-agents",
-            agents
-        };
-        Boot.main(jadeArgs);
-        */
 
         while(true) {
         	simulationDone = new CountDownLatch(1);
@@ -53,24 +61,48 @@ public abstract class RunJade {
         
     }
     private static void initializeAgents() throws ControllerException{
-    	AgentController a1 = ac.createNewAgent("Judas",agents.OracleAgent.class.getName(), new Object[]{"red","game-manager","str:conservative"});
-    	AgentController a2 = ac.createNewAgent("John",agents.OracleAgent.class.getName(), new Object[]{"blue","str:aggressive"});
-    	AgentController a3 = ac.createNewAgent("Paul",agents.PlayerAgent.class.getName(), new Object[]{"red","team-coord","str:depth"});
-    	AgentController a4 = ac.createNewAgent("Peter",agents.PlayerAgent.class.getName(), new Object[]{"red","str:score"});
-    	AgentController a5 = ac.createNewAgent("Mary",agents.PlayerAgent.class.getName(), new Object[]{"blue","str:depth"});
-    	AgentController a6 = ac.createNewAgent("Suzie",agents.PlayerAgent.class.getName(), new Object[]{"blue","team-coord","str:score"});
-    	AgentController a7 = ac.createNewAgent("Mark",agents.PlayerAgent.class.getName(), new Object[]{"red","str:depth-allpos"});
-    	AgentController a8 = ac.createNewAgent("Jack",agents.PlayerAgent.class.getName(), new Object[]{"blue","str:depth-allpos"});
-    	
-    	a1.start();
-    	a2.start();
-    	a3.start();
-    	a4.start();
-    	a5.start();
-    	a6.start();
-    	a7.start();
-    	a8.start();
+    	//initialize agents from configuration
+		for(AgentConf agent: config.agents){
+			Object[] attrs = new Object[agent.attributes.size()];
+			int i=0;
+			for(String attr: agent.attributes){
+				attrs[i++]= attr;
+			}
+			AgentController at = ac.createNewAgent(
+				agent.name,
+				agent.role.toLowerCase().equals("player")?  agents.PlayerAgent.class.getName() : agents.OracleAgent.class.getName(),
+				attrs);
+			at.start();
+		}
     }
+
+	private static void manageConfiguration(String confPath){
+		File configFile = new File(confPath);
+		if(!configFile.exists()){
+			System.out.println("Initialization: custom agent configuration not found, using default configuration instead");
+			String rootPath = System.getProperty("user.dir");
+			configFile = new File(rootPath +"/Agents/target/classes/defaultConf.json"); 
+		}
+
+		config = readConf(configFile);
+		if(!config.validate()){
+			System.out.println("Initialization: custom agent was not valid, using default configuration instead");
+			String rootPath = System.getProperty("user.dir");
+			configFile = new File(rootPath +"/Agents/target/classes/defaultConf.json"); 
+			config = readConf(configFile);
+		}
+	}
+
+	private static CodeNamesConf readConf(File configFile){
+		CodeNamesConf res = null;
+		try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
+			res = new  Gson().fromJson(reader, CodeNamesConf.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
     private static void restartPlatform() throws StaleProxyException {
     	ac.kill();
         rt.shutDown();
@@ -78,16 +110,9 @@ public abstract class RunJade {
     	Profile p = new ProfileImpl();
         p.setParameter(Profile.CONTAINER_NAME, "codenames-sim");
         ac = rt.createMainContainer(p);
-        //initializeAgents();
     }
     
     public static void simEnded(){
     	simulationDone.countDown();
     }
 }
-
-// in folder /d
-//build
-//javac -cp "./lavoro/JADE-all-4.6.0/jade/lib/*;./EclipseWorkspace/test/src"  ./EclipseWorkspace/test/src/test/TestAgent.java
-//execution
-//$ java -cp "./lavoro/JADE-all-4.6.0/jade/lib/*;./EclipseWorkspace/test/src" jade.Boot -agents test:test.TestAgent

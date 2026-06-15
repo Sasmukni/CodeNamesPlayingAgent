@@ -1,6 +1,5 @@
 package behaviours;
 import jade.core.AID;
-//import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -9,8 +8,6 @@ import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-//import jade.lang.acl.ACLMessage;
-//import jade.core.*;
 import agents.OracleAgent;
 
 public class InitializeOracle extends OneShotBehaviour {
@@ -27,7 +24,7 @@ public class InitializeOracle extends OneShotBehaviour {
         
         //check if it's a game manager
         MessageTemplate mt = MessageTemplate.MatchConversationId("game-id");
-        if(ag.getIsGameMgr()) {
+        if(ag.isGameMgr()) {
         	status = 2;
         	return;
         }

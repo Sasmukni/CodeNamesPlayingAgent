@@ -19,4 +19,13 @@ public class GameStatus {
 		}
 		return false;
 	}
+
+	public String getWordLabel(String name){
+		for(Word w : words){
+			if(w.name.equals(name)){
+				return w.label;
+			}
+		}
+		return null;
+	}
 }

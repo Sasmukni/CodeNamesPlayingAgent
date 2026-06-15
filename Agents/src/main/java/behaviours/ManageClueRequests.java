@@ -18,26 +18,19 @@ public class ManageClueRequests extends Behaviour {
         // We don't want to receive requests before we have a clue ready!!
     	OracleAgent ag = (OracleAgent) myAgent;
         if(ag.getClue() == null)
-        	return; //If we don't have a clue we don't want to read the given type 
-        
+        	return; 
     	MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("get-clue"),MessageTemplate.MatchContent(newestClue + ""));
-        //System.out.println(myAgent.getLocalName() + ": Waiting for Clue Requests");
-    	ACLMessage req = myAgent.receive(mt);
+        ACLMessage req = myAgent.receive(mt);
     	if(req != null) {
     		int clueNumber = Integer.parseInt(req.getContent());
     		Clue c = ag.getGameClues().get(clueNumber);
     		
     		if(c==null) {
     			System.out.println(myAgent.getLocalName() + ": I don't have an answer for this request yet");
-    		//	myAgent.postMessage(req); // if we don't have the answer yet we put the message back in queue
-    		//	block(); //we will call restart on this behavior 
-    			// not sure if we should block here, but if we don't do it it's a (very busy wait)
     			return;
     		}
 	        ACLMessage reply = req.createReply(ACLMessage.INFORM);
-	        // we may have to keep track of all the clues we had given (so if a player asks for the third clue we can respond accordingly)
-	        //Clue c = ag.getClue();
-        	reply.setContent(c.toString()); // if we have a clue, respond with it
+	        reply.setContent(c.toString()); // if we have a clue, respond with it
         	myAgent.send(reply);
     	}else {
     		block();
@@ -46,20 +39,10 @@ public class ManageClueRequests extends Behaviour {
     }
 	@Override
 	public boolean done() {
-		//we could be done at the end of the game, but for single game simulations we don't care
-		// TODO Auto-generated method stub
 		return false;
 	}
+	
 	public void setNewestClue(int nclue) {
 		this.newestClue = nclue;
 	}
-    
-    /* 
-    @Override
-    public boolean done() {
-        if(counter>=10)
-            return true;
-        return false;
-    }
-    */
 }

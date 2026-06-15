@@ -10,6 +10,8 @@ public class PossibleClue{
 	private String word;
 	private Double score;
 	private Collection<String> targets;
+	
+	@Override
 	public  String toString(){
 		return word + " with a score of: "+score + " with the intended targets" + targets;
 	} 
