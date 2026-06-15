@@ -5,6 +5,9 @@ import java.util.Set;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
 import java.io.File;
 
@@ -12,20 +15,17 @@ public final class RandomWordExtractor {
 	//private static String
 	
 	private static ArrayList<String> ReadDictionary(){
-		ArrayList<String> allWords = new ArrayList<String>();
-		try {
-			File file = ResourceUtils.getFile("classpath:static/ListCodenameWords.txt");
-			try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-	            String line;
-	            while ((line = reader.readLine()) != null) {
-	                //System.out.println(line);
-	            	allWords.add(line);
-	            }
-			} catch (IOException e) {
-				e.printStackTrace();
+		ArrayList<String> allWords = new ArrayList<>();
+		//File file = ResourceUtils.getFile("classpath:static/ListCodenameWords.txt");
+		ClassPathResource resource = new ClassPathResource("static/ListCodenameWords.txt");
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				//System.out.println(line);
+				allWords.add(line);
 			}
-		}catch (IOException e) {
-            e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return allWords;
 	}

@@ -1,0 +1,12 @@
+{
+    "agents":[
+        {"name":"Marcolino","role":"Oracle","attributes":["red","game-manager","str:user"]},
+        {"name":"Giovannino","role":"Oracle","attributes":["blue","str:aggressive"]},
+        {"name":"Paolino","role":"Player","attributes":["red","team-coord","str:word2vec"]},
+        {"name":"Paperino","role":"Player","attributes":["red","str:word2vec"]},
+        {"name":"Minnie","role":"Player","attributes":["blue","str:depth"]},
+        {"name":"Pluto","role":"Player","attributes":["blue","team-coord","str:score"]},
+        {"name":"Pippo","role":"Player","attributes":["red","str:depth-allpos"]},
+        {"name":"Topolino","role":"Player","attributes":["blue","str:depth-allpos"]}
+    ]
+}

@@ -4,3 +4,5 @@ Agents/src/main/resources/GoogleNews-vectors-negative300.bin
 Agents/target/classes/GoogleNews-vectors-negative300.bin
 *.class
 *.log
+WebServer/games/*.json
+*.jar

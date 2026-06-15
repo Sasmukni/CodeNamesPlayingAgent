@@ -1,21 +1,38 @@
 package Utils;
 
-import com.google.gson.Gson;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.BufferedReader;
 import java.io.IOException;
 
-import org.springframework.util.ResourceUtils;
-
-import java.io.File;
-//import org.springframework.util.ResourceUtils;
+import com.google.gson.Gson;
 
 import entities.GameStatus;
 
 public final class GameStatusIO {
 	public static boolean saveGameStatus(GameStatus gs) {
 		String res = new Gson().toJson(gs);
+
+		File file = new File("games/"+gs.Id+".json");
+		if (!file.exists()) {
+			file.getParentFile().mkdirs();
+			try {
+				file.createNewFile();
+			} catch (IOException ex) {
+				System.getLogger(GameStatusIO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			}
+		}
+		try (FileOutputStream fos = new FileOutputStream(file)) {
+			// Write initial content if needed
+			fos.write(res.getBytes());
+			System.out.println("File created and written.");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+		/* 
 		try {
 			String rootPath = System.getProperty("user.dir");
 			//String classPath = System.getProperty("java.class.path");
@@ -49,26 +66,25 @@ public final class GameStatusIO {
         }
 		
 		return true;
+		*/
 	}
 	
 	public static GameStatus getGameStatus(String Id) {
 		GameStatus gs = new GameStatus(Id);
 		//String jsonObj = "";
-		try {
-			File file = ResourceUtils.getFile("classpath:data/"+Id+".json");
-			try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-	            /*String line;
-	            while ((line = reader.readLine()) != null) {
-	                //System.out.println(line);
-	            	//allWords.add(line);
-	            	jsonObj +=line;
-	            }*/
-	            gs = new  Gson().fromJson(reader, GameStatus.class);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}catch (IOException e) {
-            e.printStackTrace();
+		//ClassPathResource resource = new ClassPathResource("data/"+Id+".json");
+		//File file = ResourceUtils.getFile("classpath:data/"+Id+".json");
+		File file = new File("games/"+gs.Id+".json");
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			/*String line;
+			while ((line = reader.readLine()) != null) {
+				//System.out.println(line);
+				//allWords.add(line);
+				jsonObj +=line;
+			}*/
+			gs = new  Gson().fromJson(reader, GameStatus.class);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return gs;
 	}

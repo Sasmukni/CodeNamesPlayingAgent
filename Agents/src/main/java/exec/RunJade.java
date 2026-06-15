@@ -1,22 +1,18 @@
 package exec;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-import org.nd4j.common.io.ResourceUtils;
 
 import com.google.gson.Gson;
 
-import java.io.FileReader;
-import java.io.BufferedReader;
-import entities.CodeNamesConf;
 import entities.AgentConf;
+import entities.CodeNamesConf;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
-import java.io.File;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
@@ -85,7 +81,7 @@ public abstract class RunJade {
 		}
 
 		config = readConf(configFile);
-		if(!config.validate()){
+		if(config==null || !config.validate()){
 			System.out.println("Initialization: custom agent was not valid, using default configuration instead");
 			String rootPath = System.getProperty("user.dir");
 			configFile = new File(rootPath +"/Agents/target/classes/defaultConf.json"); 

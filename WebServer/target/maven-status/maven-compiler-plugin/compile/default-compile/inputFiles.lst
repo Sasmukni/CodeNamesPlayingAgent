@@ -1,2 +1,10 @@
-D:\EclipseWorkspace\WebServer\src\main\java\CodeNames\WebServer\TestController.java
-D:\EclipseWorkspace\WebServer\src\main\java\CodeNames\WebServer\WebServerApplication.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\CodeNames\WebServer\Controller.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\CodeNames\WebServer\WebServerApplication.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\entities\ChangeDto.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\entities\GameStatus.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\entities\GuessDto.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\entities\Word.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\Utils\CreateGame.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\Utils\GameStatusIO.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\Utils\MyRandom.java
+C:\Users\s.capani\SdaiNlp\Repository\CodeNamesPlayingAgent\WebServer\src\main\java\Utils\RandomWordExtractor.java
