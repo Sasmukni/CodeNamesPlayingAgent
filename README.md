@@ -1,8 +1,16 @@
 # CodeNamesPlayingAgent
 In this repository is shared the SDAI and NLP project of student Samuele Capani from Università degli studi di Genova
 
+# Instructions to run the application
+Download the jars from:
+https://drive.google.com/drive/folders/1x0vLjGxTinh0-6UynAHNtMdIEQkr4BpL?usp=drive_link
 
-# Bootstrap
+First of all start the webserver with webServer.jar. After the webserver is online start the application with agents.jar.
+
+It's possible to customize the names, the number and the selected strategy of the agents appending $--$conf FILEPATH to the command, where FILEPATH points to a file with the same shape of ExampleConfig.json that can be found into the project root.
+
+
+# Bootstrap for developers/ using an Ide
 Steps to do in order to run WebServer:
 	- run the main inside 'WebServerApplication.java'
 
